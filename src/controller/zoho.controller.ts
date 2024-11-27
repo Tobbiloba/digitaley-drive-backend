@@ -13,12 +13,14 @@ const TOKEN_FILE_PATH = path.join(__dirname, '/etc/secrets/zohoToken.json');
 // Utility function to get the current access token from the token file
 const getAccessToken = (): string => {
   if (!fs.existsSync(TOKEN_FILE_PATH)) {
+    console.log('Token file not found. Ensure it exists and contains a valid access token.');
     throw new Error(
       'Token file not found. Ensure it exists and contains a valid access token.',
     );
   }
 
   const tokenData = JSON.parse(fs.readFileSync(TOKEN_FILE_PATH, 'utf-8'));
+  console.log(tokenData)
   if (!tokenData.access_token) {
     throw new Error('Access token is missing in the token file.');
   }
