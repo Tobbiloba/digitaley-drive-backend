@@ -1,4 +1,3 @@
-import fs from 'fs';
 import nodemailer from 'nodemailer';
 import ejs from 'ejs';
 import path from 'path';
@@ -7,28 +6,6 @@ import CatchAsyncError from '../middleware/catchAsynchError';
 import ErrorHandler from '../utils/ErrorHandler';
 const superagent = require('superagent');
 
-// Define the path for the token file
-const TOKEN_FILE_PATH = path.join(__dirname, '/etc/secrets/zohoToken.json');
-
-// Utility function to get the current access token from the token file
-const getAccessToken = (): string => {
-  if (!fs.existsSync(TOKEN_FILE_PATH)) {
-    console.log('Token file not found. Ensure it exists and contains a valid access token.');
-    throw new Error(
-      'Token file not found. Ensure it exists and contains a valid access token.',
-    );
-  }
-
-  const tokenData = JSON.parse(fs.readFileSync(TOKEN_FILE_PATH, 'utf-8'));
-  console.log(tokenData)
-  if (!tokenData.access_token) {
-    throw new Error('Access token is missing in the token file.');
-  }
-
-  return tokenData.access_token;
-};
-
-// Function to refresh the Zoho access token
 const refreshAccessToken = async (): Promise<string> => {
   try {
     const response = await superagent
@@ -42,25 +19,8 @@ const refreshAccessToken = async (): Promise<string> => {
       });
 
     const newAccessToken = response.body.access_token;
-
-    // Update the token file
-    fs.writeFileSync(
-      TOKEN_FILE_PATH,
-      JSON.stringify({ access_token: newAccessToken }, null, 2),
-    );
     return newAccessToken;
   } catch (error: any) {
-    // Log additional error details for debugging
-    if (error.response) {
-      console.error('Error response from Zoho:', {
-        status: error.response.status,
-        headers: error.response.headers,
-        body: error.response.body,
-      });
-    } else {
-      console.error('Unexpected error:', error.message);
-    }
-
     throw new Error('Failed to refresh access token.');
   }
 };
@@ -71,7 +31,8 @@ const sendDataToZohoSpreadsheet = async (
   spreadsheetId: string,
 ): Promise<any> => {
   try {
-    const accessToken = getAccessToken();
+    // const accessToken = getAccessToken();
+    const accessToken = process.env.ZOHO_ACCESS_TOKEN;
     const res = await superagent
       .post(`${process.env.ZOHO_SHEET_URL}${spreadsheetId}`)
       .set('Authorization', `Zoho-oauthtoken ${accessToken}`)
@@ -88,10 +49,9 @@ const sendDataToZohoSpreadsheet = async (
     // Handle token expiration error
     if (error.response && error.response.status === 401) {
       const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken)
       return await superagent
         .post(
-          `${process.env.ZOHO_SHEET_URL}/${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`,
+          `${process.env.ZOHO_SHEET_URL}${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`,
         )
         .set('Authorization', `Zoho-oauthtoken ${newAccessToken}`)
         .type('form')
@@ -125,14 +85,12 @@ export const dataSolutionController = CatchAsyncError(
         data,
         spreadsheetId as string,
       );
-      console.log('Successfully sent data');
       return res.status(200).json({
         success: true,
         message: 'Successfully sent data',
         status: response.status,
       });
     } catch (error: any) {
-        console.log(error)
       return next(
         new ErrorHandler(
           'Failed to send data to Zoho Spreadsheet. Please try again later.',
@@ -222,7 +180,6 @@ export const hireTalentController = CatchAsyncError(
 
 export const privateClassController = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
-    // console.log("called")
     const {
       firstName,
       currentRole,
@@ -248,7 +205,6 @@ export const privateClassController = CatchAsyncError(
       'How did you hear about us?': hearAboutUs,
       companyRole: currentRole,
     };
-    // console.log(data)
     try {
       const spreadsheetId = process.env.ZOHO_PRIVATE_CLASS_SPREADSHEET_ID;
       const response = await sendDataToZohoSpreadsheet(
@@ -383,7 +339,6 @@ export const sendMailWithAccessToken = async (options: any): Promise<void> => {
 
     await transporter.sendMail(mailOptions);
   } catch (error: any) {
-    console.error(`Error sending email: ${error.message}`);
     throw new Error('Failed to send email.');
   }
 };
