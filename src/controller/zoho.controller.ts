@@ -88,7 +88,7 @@ const sendDataToZohoSpreadsheet = async (
     // Handle token expiration error
     if (error.response && error.response.status === 401) {
       const newAccessToken = await refreshAccessToken();
-
+        console.log(newAccessToken)
       return await superagent
         .post(
           `${process.env.ZOHO_SHEET_URL}/${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`,
@@ -132,6 +132,7 @@ export const dataSolutionController = CatchAsyncError(
         status: response.status,
       });
     } catch (error: any) {
+        console.log(error)
       return next(
         new ErrorHandler(
           'Failed to send data to Zoho Spreadsheet. Please try again later.',
