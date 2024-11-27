@@ -8,7 +8,7 @@ import ErrorHandler from '../utils/ErrorHandler';
 const superagent = require('superagent');
 
 // Define the path for the token file
-const TOKEN_FILE_PATH = path.join(__dirname, '../../config/zohoToken.json');
+const TOKEN_FILE_PATH = path.join(__dirname, '/etc/secrets/zohoToken.json');
 
 // Utility function to get the current access token from the token file
 const getAccessToken = (): string => {
