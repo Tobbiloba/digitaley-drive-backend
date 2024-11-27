@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Course Purchase Confirmation</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f7fafc;
+            color: #4a5568;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header img {
+            width: 50px;
+            height: 50px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .details {
+            margin-bottom: 32px;
+        }
+
+        .details p {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .details span {
+            font-weight: 400;
+            color: #2d3748;
+        }
+
+        .cta-button {
+            background-color: #38a169;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 32px;
+        }
+
+        .cta-button:hover {
+            background-color: #2f855a;
+        }
+
+        .footer {
+            text-align: center;
+            color: #718096;
+        }
+
+        .footer a {
+            color: #3182ce;
+            text-decoration: none;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 32px;
+        }
+
+        .social-links a {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .footer-links a {
+            color: #3182ce;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .unsubscribe {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <img src="http://localhost:3000/assets/svg/transparent-logo.svg" alt="Logo">
+        </div>
+
+        <!-- Content Section -->
+        <h1>Course Purchase Confirmation</h1>
+
+        <p>Thank you for your purchase! Your registration for the course has been successfully completed. Below are the details of your payment:</p>
+
+        <div class="details">
+            <p>Full Name: <span><%= user.name %></span></p>
+            <p>Email Address: <span><%= user.email %></span></p>
+
+            <% if (!user.email && !user.password) { %>
+                <!-- If the user does not have an account and is receiving a temporary password -->
+                <p>Temporary Password: <span><%= password %></span></p>
+            <% } %>
+
+            <p>Course Purchased: <span>Web Development Bootcamp</span></p>
+            <p>Amount Paid: <span><%= amountPaid %></span></p>
+            <p>Full Payment: <span><%= isFullyPaid ? 'Yes' : 'No' %></span></p>
+            <p>Coupon Code Applied: <span><%= couponCode ? couponCode : 'None' %></span></p>
+        </div>
+
+        <p>For security purposes, we recommend changing your temporary password as soon as possible.</p>
+
+        <a href="https://www.digitaleydrive.com/" class="cta-button">Access Your Course</a>
+
+        <!-- Footer Section -->
+        <div class="footer">
+            <p>If you have any questions or require support, please don't hesitate to <a href="mailto:contact@digitaleydrive.com">contact us</a>.</p>
+            <div class="footer-links">
+                <a href="https://www.digitaleydrive.com/">Home</a>
+                <a href="https://www.digitaleydrive.com/about-us">About Us</a>
+                <a href="https://www.digitaleydrive.com/services">Services</a>
+                <a href="https://www.digitaleydrive.com/contact-us">Contact Us</a>
+            </div>
+        </div>
+
+        <!-- Social Media Links Section -->
+        <div class="social-links">
+            <a href="https://www.instagram.com">Instagram</a>
+            <a href="https://www.linkedin.com">LinkedIn</a>
+            <a href="https://twitter.com">Twitter</a>
+            <a href="https://www.facebook.com">Facebook</a>
+        </div>
+
+        <!-- Unsubscribe Section -->
+        <div class="unsubscribe">
+            <p>If you no longer wish to receive these emails, you can <a href="#">unsubscribe here</a>.</p>
+        </div>
+    </div>
+</body>
+</html>

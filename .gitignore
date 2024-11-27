@@ -1,0 +1,10 @@
+.env
+node_modules
+build
+.eslintignore
+.eslintrc.json
+eslint.config.mjs
+eslint.config.js
+.prettierignore
+.prettierrc.cjs
+/config

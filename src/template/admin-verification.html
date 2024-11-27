@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Account Created</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: 'Lato', sans-serif;
+        background-color: #f4f4f7;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 20px;
+      }
+
+      .header img {
+        width: 50px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 16px;
+      }
+      p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+      .details {
+        background: #f9fafb;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .details p {
+        margin: 8px 0;
+      }
+      .cta-button {
+        background-color: #38a169;
+        color: white;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 32px;
+      }
+      .cta-button:hover {
+        background-color: #0056b3;
+      }
+      .footer {
+        text-align: start;
+        margin-top: 20px;
+        color: #888;
+        font-size: 14px;
+      }
+      .footer a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <img
+          src="https://www.digitaleydrive.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fdigitaley-logo.e1e0ebc5.png&w=96&q=75"
+          alt="Company Logo"
+        />
+      </div>
+
+      <!-- Main Content -->
+      <h1>Welcome to the Admin Panel!</h1>
+      <p>Hello,</p>
+      <p>
+        Your admin account has been successfully created. Please find your login
+        details below:
+      </p>
+
+      <div class="details">
+        <p><strong>Email:</strong> <span><%= user.email %></span></p>
+        <p><strong>Temporary Password:</strong> <span><%= password %></span></p>
+        <p><strong>Role:</strong> <span><%= role %></span></p>
+      </div>
+
+      <p>
+        We recommend changing your password immediately after logging in for
+        security purposes.
+      </p>
+      <a href="https://www.digitaleydrive.com/admin" class="cta-button"
+        >Access Admin Panel</a
+      >
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          If you have any questions or encounter issues, please contact our
+          support team at:
+        </p>
+        <p>
+          Email:
+          <a href="mailto:support@digitaleydrive.com"
+            >support@digitaleydrive.com</a
+          >
+        </p>
+        <p>&copy; 2024 Digitaley Drive. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

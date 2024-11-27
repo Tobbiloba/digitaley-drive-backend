@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>Teacher Account Notification</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Base styles */
+      body {
+        font-family: 'Lato', sans-serif;
+        background-color: #f7fafc;
+        color: #4a5568;
+        margin: 0;
+        padding: 0;
+        height: fit-content;
+      }
+
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 20px;
+      }
+
+      .header img {
+        width: 50px;
+      }
+
+      h1 {
+        font-size: 26px;
+        font-weight: 500;
+        color: #2d3748;
+        margin-bottom: 16px;
+      }
+
+      p {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+
+      .details {
+        margin-bottom: 32px;
+      }
+
+      .details p {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .details span {
+        font-weight: 400;
+        color: #2d3748;
+      }
+      .cta-button {
+        background-color: #38a169;
+        color: white;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 32px;
+      }
+
+      .cta-button:hover {
+        background-color: #2b6cb0;
+      }
+
+      .footer {
+        text-align: center;
+        color: #718096;
+      }
+
+      .footer a {
+        color: #3182ce;
+        text-decoration: none;
+      }
+
+      .footer p {
+        font-size: 15px;
+        color: gray;
+        font-weight: 500;
+        text-align: start;
+      }
+
+      .text-bg {
+        background-color: #e2e8f0;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header Section -->
+      <div class="header">
+        <img
+          src="https://www.digitaleydrive.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fdigitaley-logo.e1e0ebc5.png&w=96&q=75"
+          alt="Logo"
+        />
+      </div>
+
+      <!-- Content Section -->
+      <h1>Welcome, Teacher!</h1>
+
+      <p>
+        We are excited to inform you that you have been added as a teacher for
+        the course: <span class="text-bg"><%= courseName %></span>.
+      </p>
+
+      <p>Here are your login credentials:</p>
+      <div class="details">
+        <p>Email Address: <span class="text-bg"><%= user.email %></span></p>
+        <p>Password: <span class="text-bg"><%= password %></span></p>
+      </div>
+
+      <p>
+        Click the button below to log in and access your teaching dashboard:
+      </p>
+      <a href="https://www.digitaleydrive.com/login" class="cta-button"
+        >Log In</a
+      >
+
+      <!-- Footer Section -->
+      <div class="footer">
+        <p>
+          If you have any questions or need assistance, feel free to reach out
+          to us.
+        </p>
+        <p>
+          Email:
+          <a href="mailto:support@digitaleydrive.com"
+            >support@digitaleydrive.com</a
+          ><br />Phone: +234 903 471 8259
+        </p>
+
+        <p>&copy; 2024 Digitaley Drive. All Rights Reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

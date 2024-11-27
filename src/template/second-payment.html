@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>Course Purchase Confirmation</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Base styles */
+      body {
+        font-family: 'Lato', sans-serif;
+        background-color: #f7fafc;
+        color: #4a5568;
+        margin: 0;
+        padding: 0;
+        height: fit-content;
+      }
+
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 20px;
+      }
+
+      .header img {
+        width: 50px;
+      }
+
+      h1 {
+        font-size: 26px;
+        font-weight: 500;
+        color: #2d3748;
+        margin-bottom: 16px;
+      }
+
+      p {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+
+      .details p {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .details span {
+        font-weight: 400;
+        color: #2d3748;
+      }
+
+      .cta-button {
+        background-color: #38a169;
+        color: white;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 32px;
+      }
+
+      .cta-button:hover {
+        background-color: #2f855a;
+      }
+
+      .footer {
+        text-align: center;
+        color: #718096;
+      }
+
+      .footer a {
+        color: #3182ce;
+        text-decoration: none;
+      }
+
+      .text-bg {
+        background-color: #e2e8f0;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+
+      .payment-details h1 {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .payment-data {
+        background-color: #e2e8f0;
+        padding: 1rem;
+        border-radius: 1rem;
+      }
+
+      .payment-record {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-bottom: 2px solid #334155;
+        padding-bottom: 32px;
+      }
+
+      .status-success {
+        background-color: #4caf50; /* Green for success */
+      }
+
+      .status-pending {
+        background-color: #ff9800; /* Orange for pending */
+      }
+
+      .status-failed {
+        background-color: #f44336; /* Red for failed */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header Section -->
+      <div class="header">
+        <img
+          src="https://www.digitaleydrive.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fdigitaley-logo.e1e0ebc5.png&w=96&q=75"
+          alt="Logo"
+        />
+      </div>
+
+      <!-- Content Section -->
+      <h1>Hello, <%= user.name %>!</h1>
+
+      <p>
+        Thank you for balancing your payment. Your registration and course
+        purchase are confirmed. Below are the details:
+      </p>
+
+      <div class="details">
+        <p>Email Address: <span class="text-bg"><%= user.email %></span></p>
+        <p>Course Purchased: <span class="text-bg"><%= courseName %></span></p>
+      </div>
+
+      <div class="payment-details">
+        <h1>Payment Details</h1>
+        <div class="payment-data">
+          <p>
+            Course Purchased:
+            <span class="text-bg"><%= paymentInfo.courseName %></span>
+          </p>
+          <p>
+            Total Price:
+            <span class="text-bg"
+              >₦<%= paymentInfo.price.toLocaleString('en-NG', {
+              minimumFractionDigits: 2 }) %></span
+            >
+          </p>
+          <p>
+            Balance Remaining:
+            <span class="text-bg"
+              >₦<%= paymentInfo.balance.toLocaleString('en-NG', {
+              minimumFractionDigits: 2 }) %></span
+            >
+          </p>
+        </div>
+
+        <div class="payment-table">
+          <% paymentInfo.amountPaid.forEach(payment => { %>
+          <div class="payment-record">
+            <p>
+              Amount Paid:
+              <span class="text-bg"
+                >₦<%= payment.amount.toLocaleString('en-NG', {
+                minimumFractionDigits: 2 }) %></span
+              >
+            </p>
+            <p>
+              Payment Date:
+              <span class="text-bg"
+                ><%= new Date(payment.date).toLocaleString() %></span
+              >
+            </p>
+            <p>
+              Payment Status:
+              <span
+                class="text-bg <%= payment.status === 'successful' ? 'status-success' : payment.status === 'pending' ? 'status-pending' : 'status-failed' %>"
+                ><%= payment.status %></span
+              >
+            </p>
+            <p>
+              Reference ID:
+              <span class="text-bg"><%= payment.reference_id || 'N/A' %></span>
+            </p>
+          </div>
+          <% }); %>
+        </div>
+      </div>
+
+      <a href="https://www.digitaleydrive.com/" class="cta-button"
+        >Access Your Course</a
+      >
+
+      <!-- Footer Section -->
+      <div class="footer">
+        <p>If you have any questions, feel free to contact us:</p>
+        <p>
+          Email:
+          <a href="mailto:support@digitaleydrive.com"
+            >support@digitaleydrive.com</a
+          ><br />Phone: +234 903 471 8259
+        </p>
+        <p>&copy; 2024 Digitaley Drive. All Rights Reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
