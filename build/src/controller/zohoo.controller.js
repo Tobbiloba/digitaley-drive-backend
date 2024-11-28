@@ -1,116 +1,145 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMailWithAccessToken = exports.zohoBusiness = exports.dataSolutionController = void 0;
-const catchAsynchError_1 = __importDefault(require("../middleware/catchAsynchError"));
-const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
-exports.dataSolutionController = (0, catchAsynchError_1.default)(async (req, res, next) => {
-    const { email, firstName, lastName, phone, message, additionalMessage } = req.body;
+'use strict';
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
+Object.defineProperty(exports, '__esModule', { value: true });
+exports.sendMailWithAccessToken =
+  exports.zohoBusiness =
+  exports.dataSolutionController =
+    void 0;
+const catchAsynchError_1 = __importDefault(
+  require('../middleware/catchAsynchError'),
+);
+const ErrorHandler_1 = __importDefault(require('../utils/ErrorHandler'));
+exports.dataSolutionController = (0, catchAsynchError_1.default)(
+  async (req, res, next) => {
+    const { email, firstName, lastName, phone, message, additionalMessage } =
+      req.body;
     const data = {
+      Email: email,
+      'First Name': firstName,
+      'Last Name': lastName,
+      Phone: phone,
+      Message: message,
+      'Kindly provide any additional information': additionalMessage,
+    };
+    try {
+      const response = await sendDataToZohoSpreadsheet(data);
+      return res.status(200).json({
+        success: true,
+        message: 'Successfully sent data',
+        status: response.status,
+      });
+    } catch (error) {
+      console.error('Error sending data to Zoho Spreadsheet:', error.message);
+      if (error.response?.status === 401) {
+        console.log('Access token expired. Attempting to refresh...');
+        try {
+          console.log('refreshing token');
+          await refreshAccessToken();
+          const retryResponse = await sendDataToZohoSpreadsheet(data); // Retry after refreshing the token
+          return res.status(200).json({
+            success: true,
+            message: 'Successfully sent data after token refresh',
+            status: retryResponse.status,
+          });
+        } catch (refreshError) {
+          console.error(
+            'Failed to refresh access token:',
+            refreshError.message,
+          );
+          return next(
+            new ErrorHandler_1.default(
+              'Failed to refresh access token. Please try again later.',
+              401,
+            ),
+          );
+        }
+      }
+      return next(
+        new ErrorHandler_1.default(
+          'Failed to send data to Zoho Spreadsheet. Please try again later.',
+          400,
+        ),
+      );
+    }
+  },
+);
+// Utility function to handle the Zoho API request
+const sendDataToZohoSpreadsheet = async (data) => {
+  console.log({ data });
+  console.log(
+    `${process.env.ZOHO_SHEET_URL}${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`,
+  );
+  return await superagent
+    .post(
+      `${process.env.ZOHO_SHEET_URL}/${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`,
+    )
+    .set('Authorization', `Zoho-oauthtoken ${process.env.ZOHO_ACCESS_TOKEN}`)
+    .type('form') // Ensure the request is sent as form data
+    .send({
+      method: 'worksheet.records.add',
+      worksheet_name: 'Sheet1', // Target worksheet
+      header_row: '1', // Specifies that the first row contains headers
+      json_data: JSON.stringify(data), // Convert data to JSON string
+    });
+};
+exports.zohoBusiness = (0, catchAsynchError_1.default)(
+  async (req, res, next) => {
+    try {
+      const { email, firstName, lastName, phone, message, additionalMessage } =
+        req.body;
+      const data = {
         Email: email,
         'First Name': firstName,
         'Last Name': lastName,
         Phone: phone,
         Message: message,
         'Kindly provide any additional information': additionalMessage,
-    };
-    try {
-        const response = await sendDataToZohoSpreadsheet(data);
-        return res.status(200).json({
-            success: true,
-            message: 'Successfully sent data',
-            status: response.status,
-        });
-    }
-    catch (error) {
-        console.error('Error sending data to Zoho Spreadsheet:', error.message);
-        if (error.response?.status === 401) {
-            console.log('Access token expired. Attempting to refresh...');
-            try {
-                console.log('refreshing token');
-                await refreshAccessToken();
-                const retryResponse = await sendDataToZohoSpreadsheet(data); // Retry after refreshing the token
-                return res.status(200).json({
-                    success: true,
-                    message: 'Successfully sent data after token refresh',
-                    status: retryResponse.status,
-                });
-            }
-            catch (refreshError) {
-                console.error('Failed to refresh access token:', refreshError.message);
-                return next(new ErrorHandler_1.default('Failed to refresh access token. Please try again later.', 401));
-            }
-        }
-        return next(new ErrorHandler_1.default('Failed to send data to Zoho Spreadsheet. Please try again later.', 400));
-    }
-});
-// Utility function to handle the Zoho API request
-const sendDataToZohoSpreadsheet = async (data) => {
-    console.log({ data });
-    console.log(`${process.env.ZOHO_SHEET_URL}${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`);
-    return await superagent
-        .post(`${process.env.ZOHO_SHEET_URL}/${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`)
-        .set('Authorization', `Zoho-oauthtoken ${process.env.ZOHO_ACCESS_TOKEN}`)
+      };
+      const response = await superagent
+        .post(`${process.env.ZOHO_BUSINESS_SPREADSHEET_ID}`)
+        .set('Authorization', `Zoho-oauthtoken ${ZOHO_ACCESS_TOKEN}`)
         .type('form') // Ensure the request is sent as form data
         .send({
-        method: 'worksheet.records.add',
-        worksheet_name: 'Sheet1', // Target worksheet
-        header_row: '1', // Specifies that the first row contains headers
-        json_data: JSON.stringify(data), // Convert data to JSON string
-    });
-};
-exports.zohoBusiness = (0, catchAsynchError_1.default)(async (req, res, next) => {
-    try {
-        const { email, firstName, lastName, phone, message, additionalMessage } = req.body;
-        const data = {
-            Email: email,
-            'First Name': firstName,
-            'Last Name': lastName,
-            Phone: phone,
-            Message: message,
-            'Kindly provide any additional information': additionalMessage,
-        };
-        const response = await superagent
-            .post(`${process.env.ZOHO_BUSINESS_SPREADSHEET_ID}`)
-            .set('Authorization', `Zoho-oauthtoken ${ZOHO_ACCESS_TOKEN}`)
-            .type('form') // Ensure the request is sent as form data
-            .send({
-            method: 'worksheet.records.add',
-            worksheet_name: 'Sheet1', // Target worksheet
-            header_row: '1', // Specifies that the first row contains headers
-            json_data: JSON.stringify(data), // Convert data to JSON string
+          method: 'worksheet.records.add',
+          worksheet_name: 'Sheet1', // Target worksheet
+          header_row: '1', // Specifies that the first row contains headers
+          json_data: JSON.stringify(data), // Convert data to JSON string
         });
-        // return res.status(200).json({
-        //     success: true,
-        //     message: response.data,
-        // });
+      // return res.status(200).json({
+      //     success: true,
+      //     message: response.data,
+      // });
+    } catch (error) {
+      console.log('Error', error.response.data);
+      return next(new ErrorHandler_1.default(error.message, 400));
     }
-    catch (error) {
-        console.log('Error', error.response.data);
-        return next(new ErrorHandler_1.default(error.message, 400));
-    }
-});
+  },
+);
 async function refreshAccessToken() {
-    try {
-        const response = await superagent
-            .post('https://accounts.zoho.eu/oauth/v2/token')
-            .type('form')
-            .send({
-            refresh_token: process.env.ZOHO_REFRESH_TOKEN,
-            client_id: process.env.ZOHO_CLIENT_ID,
-            client_secret: process.env.ZOHO_CLIENT_SECRET,
-            grant_type: 'refresh_token',
-        });
-        process.env.ZOHO_ACCESS_TOKEN = response.body.access_token;
-        console.log(response.body.access_token);
-        console.log('Access token refreshed:', process.env.ZOHO_ACCESS_TOKEN);
-    }
-    catch (error) {
-        console.error('Error refreshing access token:', error.response?.body || error.message);
-        throw error;
-    }
+  try {
+    const response = await superagent
+      .post('https://accounts.zoho.eu/oauth/v2/token')
+      .type('form')
+      .send({
+        refresh_token: process.env.ZOHO_REFRESH_TOKEN,
+        client_id: process.env.ZOHO_CLIENT_ID,
+        client_secret: process.env.ZOHO_CLIENT_SECRET,
+        grant_type: 'refresh_token',
+      });
+    process.env.ZOHO_ACCESS_TOKEN = response.body.access_token;
+    console.log(response.body.access_token);
+    console.log('Access token refreshed:', process.env.ZOHO_ACCESS_TOKEN);
+  } catch (error) {
+    console.error(
+      'Error refreshing access token:',
+      error.response?.body || error.message,
+    );
+    throw error;
+  }
 }
 const superagent = require('superagent');
 // "access_token": "",
@@ -119,10 +148,12 @@ const superagent = require('superagent');
 // const ZOHO_CLIENT_ID = '1000.TDW3JAV2BWTMP17LTGJI5J5TILLKPG'; // Replace with your client ID
 // const ZOHO_CLIENT_SECRET = '90e548c249c83190839d3a6eda6aaa8202151ca922'; // Replace with your client secret
 // let ZOHO_ACCESS_TOKEN = '1000.00733577318d47e854b94eb4ec83247d.0d2c1b429937908d0415a477a2f8f2b8'; // Replace with your access token
-const ZOHO_REFRESH_TOKEN = '1000.4ca7e0621511e12adbff267a57c6bb3f.4938a8f3f860bc9c44967a04aa939d5b'; // Replace with your refresh token
+const ZOHO_REFRESH_TOKEN =
+  '1000.4ca7e0621511e12adbff267a57c6bb3f.4938a8f3f860bc9c44967a04aa939d5b'; // Replace with your refresh token
 const ZOHO_CLIENT_ID = '1000.J3IU7V0A60XW1D0GSKH54B7WNFNWIL'; // Replace with your client ID
 const ZOHO_CLIENT_SECRET = '3cfc150569805f513b2bd9b8d80b2b544f82dc5c1f'; // Replace with your client secret
-let ZOHO_ACCESS_TOKEN = '1000.b323e2333f1a27a18fe6f2ca564c0d16.d3bd8ec4b40d3c9b00547cad5c9f27d5'; // Replace with your access token
+let ZOHO_ACCESS_TOKEN =
+  '1000.b323e2333f1a27a18fe6f2ca564c0d16.d3bd8ec4b40d3c9b00547cad5c9f27d5'; // Replace with your access token
 const SPREADSHEET_ID = 'h2yhydcbd2da4134b436298d4903202611bb9'; // Replace with your spreadsheet ID
 // const SPREADSHEET_ID = 'u1wsn823d93007a8e4996b2799e03ebf6866b'; // Replace with your spreadsheet ID
 // Function to refresh Zoho access token
@@ -184,9 +215,9 @@ const SPREADSHEET_ID = 'h2yhydcbd2da4134b436298d4903202611bb9'; // Replace with 
 //       console.error('Failed to send data:', error.message);
 //     }
 //   })();
-const nodemailer_1 = __importDefault(require("nodemailer"));
-const ejs_1 = __importDefault(require("ejs"));
-const path_1 = __importDefault(require("path"));
+const nodemailer_1 = __importDefault(require('nodemailer'));
+const ejs_1 = __importDefault(require('ejs'));
+const path_1 = __importDefault(require('path'));
 // interface EmailDetails {
 //     toEmail: string;
 //     subject: string;
@@ -260,59 +291,61 @@ const path_1 = __importDefault(require("path"));
 //     }
 //   })();
 const sendMailWithAccessToken = async (options) => {
-    try {
-        await refreshAccessToken();
-        let transporter = nodemailer_1.default.createTransport({
-            host: 'smtp.zoho.eu',
-            port: 465,
-            secure: true,
-            auth: {
-                user: 'contact@digitaleydrive.com',
-                pass: 'GwsRVMqt4g1H',
-            },
-        });
-        const { email, subject, template, data } = options;
-        // Path to the email template file
-        const templatePath = path_1.default.join(__dirname, '../template', template);
-        // Render the email template with EJS
-        const html = await ejs_1.default.renderFile(templatePath, data);
-        const mailOptions = {
-            from: 'contact@digitaleydrive.com',
-            to: email,
-            subject,
-            html,
-        };
-        await transporter.sendMail(mailOptions);
-        console.log('sent successful');
-        console.log(`Email sent successfully to ${email}`);
+  try {
+    await refreshAccessToken();
+    let transporter = nodemailer_1.default.createTransport({
+      host: 'smtp.zoho.eu',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'contact@digitaleydrive.com',
+        pass: 'GwsRVMqt4g1H',
+      },
+    });
+    const { email, subject, template, data } = options;
+    // Path to the email template file
+    const templatePath = path_1.default.join(
+      __dirname,
+      '../template',
+      template,
+    );
+    // Render the email template with EJS
+    const html = await ejs_1.default.renderFile(templatePath, data);
+    const mailOptions = {
+      from: 'contact@digitaleydrive.com',
+      to: email,
+      subject,
+      html,
+    };
+    await transporter.sendMail(mailOptions);
+    console.log('sent successful');
+    console.log(`Email sent successfully to ${email}`);
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      console.log('Access token expired. Refreshing...');
+      await refreshAccessToken();
+      await (0, exports.sendMailWithAccessToken)({
+        email: 'abayomitobiloba410@gmail.com',
+        subject: 'Welcome to Our Platform',
+        template: 'email-validation.html',
+        data: { name: 'John Doe', appName: 'Awesome App' },
+      }); // Retry after refreshing the token
     }
-    catch (error) {
-        if (error.response && error.response.status === 401) {
-            console.log('Access token expired. Refreshing...');
-            await refreshAccessToken();
-            await (0, exports.sendMailWithAccessToken)({
-                email: 'abayomitobiloba410@gmail.com',
-                subject: 'Welcome to Our Platform',
-                template: 'email-validation.html',
-                data: { name: 'John Doe', appName: 'Awesome App' },
-            }); // Retry after refreshing the token
-        }
-        console.error(`Error sending email: ${error.message}`);
-        throw new Error('Failed to send email.');
-    }
+    console.error(`Error sending email: ${error.message}`);
+    throw new Error('Failed to send email.');
+  }
 };
 exports.sendMailWithAccessToken = sendMailWithAccessToken;
 (async () => {
-    try {
-        await (0, exports.sendMailWithAccessToken)({
-            email: 'tobiloba.a.salau@gmail.com',
-            subject: 'Welcome to Our Platform',
-            template: 'email-validation.html',
-            data: { name: 'John Doe', appName: 'Awesome App' },
-        });
-        console.log('Email sent successfully!');
-    }
-    catch (error) {
-        console.error(error.message);
-    }
+  try {
+    await (0, exports.sendMailWithAccessToken)({
+      email: 'tobiloba.a.salau@gmail.com',
+      subject: 'Welcome to Our Platform',
+      template: 'email-validation.html',
+      data: { name: 'John Doe', appName: 'Awesome App' },
+    });
+    console.log('Email sent successfully!');
+  } catch (error) {
+    console.error(error.message);
+  }
 })();

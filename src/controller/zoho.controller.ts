@@ -124,13 +124,7 @@ export const contactUsController = CatchAsyncError(
         status: response.status,
       });
     } catch (error: any) {
-        console.log({error});
-      return next(
-        new ErrorHandler(
-          error,
-          400,
-        ),
-      );
+      return next(new ErrorHandler(error, 400));
     }
   },
 );
