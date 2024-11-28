@@ -124,9 +124,10 @@ export const contactUsController = CatchAsyncError(
         status: response.status,
       });
     } catch (error: any) {
+        console.log({error});
       return next(
         new ErrorHandler(
-          'Failed to send data to Zoho Spreadsheet. Please try again later.',
+          error,
           400,
         ),
       );
