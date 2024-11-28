@@ -4,27 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMailWithAccessToken = exports.companyTrainningController = exports.brochureController = exports.privateClassController = exports.hireTalentController = exports.contactUsController = exports.dataSolutionController = void 0;
-const fs_1 = __importDefault(require("fs"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const ejs_1 = __importDefault(require("ejs"));
 const path_1 = __importDefault(require("path"));
 const catchAsynchError_1 = __importDefault(require("../middleware/catchAsynchError"));
 const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
 const superagent = require('superagent');
-// Define the path for the token file
-const TOKEN_FILE_PATH = path_1.default.join(__dirname, '../../config/zohoToken.json');
-// Utility function to get the current access token from the token file
-const getAccessToken = () => {
-    if (!fs_1.default.existsSync(TOKEN_FILE_PATH)) {
-        throw new Error('Token file not found. Ensure it exists and contains a valid access token.');
-    }
-    const tokenData = JSON.parse(fs_1.default.readFileSync(TOKEN_FILE_PATH, 'utf-8'));
-    if (!tokenData.access_token) {
-        throw new Error('Access token is missing in the token file.');
-    }
-    return tokenData.access_token;
-};
-// Function to refresh the Zoho access token
 const refreshAccessToken = async () => {
     try {
         const response = await superagent
@@ -37,29 +22,17 @@ const refreshAccessToken = async () => {
             grant_type: 'refresh_token',
         });
         const newAccessToken = response.body.access_token;
-        // Update the token file
-        fs_1.default.writeFileSync(TOKEN_FILE_PATH, JSON.stringify({ access_token: newAccessToken }, null, 2));
         return newAccessToken;
     }
     catch (error) {
-        // Log additional error details for debugging
-        if (error.response) {
-            console.error('Error response from Zoho:', {
-                status: error.response.status,
-                headers: error.response.headers,
-                body: error.response.body,
-            });
-        }
-        else {
-            console.error('Unexpected error:', error.message);
-        }
         throw new Error('Failed to refresh access token.');
     }
 };
 // Function to send data to Zoho spreadsheet
 const sendDataToZohoSpreadsheet = async (data, spreadsheetId) => {
     try {
-        const accessToken = getAccessToken();
+        // const accessToken = getAccessToken();
+        const accessToken = process.env.ZOHO_ACCESS_TOKEN;
         const res = await superagent
             .post(`${process.env.ZOHO_SHEET_URL}${spreadsheetId}`)
             .set('Authorization', `Zoho-oauthtoken ${accessToken}`)
@@ -77,7 +50,7 @@ const sendDataToZohoSpreadsheet = async (data, spreadsheetId) => {
         if (error.response && error.response.status === 401) {
             const newAccessToken = await refreshAccessToken();
             return await superagent
-                .post(`${process.env.ZOHO_SHEET_URL}/${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`)
+                .post(`${process.env.ZOHO_SHEET_URL}${process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID}`)
                 .set('Authorization', `Zoho-oauthtoken ${newAccessToken}`)
                 .type('form')
                 .send({
@@ -103,7 +76,6 @@ exports.dataSolutionController = (0, catchAsynchError_1.default)(async (req, res
     try {
         const spreadsheetId = process.env.ZOHO_DATA_SOLUTION_SPREADSHEET_ID;
         const response = await sendDataToZohoSpreadsheet(data, spreadsheetId);
-        console.log('Successfully sent data');
         return res.status(200).json({
             success: true,
             message: 'Successfully sent data',
@@ -133,7 +105,8 @@ exports.contactUsController = (0, catchAsynchError_1.default)(async (req, res, n
         });
     }
     catch (error) {
-        return next(new ErrorHandler_1.default('Failed to send data to Zoho Spreadsheet. Please try again later.', 400));
+        console.log({ error });
+        return next(new ErrorHandler_1.default(error, 400));
     }
 });
 exports.hireTalentController = (0, catchAsynchError_1.default)(async (req, res, next) => {
@@ -161,7 +134,6 @@ exports.hireTalentController = (0, catchAsynchError_1.default)(async (req, res, 
     }
 });
 exports.privateClassController = (0, catchAsynchError_1.default)(async (req, res, next) => {
-    // console.log("called")
     const { firstName, currentRole, lastName, email, phoneNumber, companyName, course, hearAboutUs, other, gender, } = req.body;
     const data = {
         'First Name': firstName,
@@ -175,7 +147,6 @@ exports.privateClassController = (0, catchAsynchError_1.default)(async (req, res
         'How did you hear about us?': hearAboutUs,
         companyRole: currentRole,
     };
-    // console.log(data)
     try {
         const spreadsheetId = process.env.ZOHO_PRIVATE_CLASS_SPREADSHEET_ID;
         const response = await sendDataToZohoSpreadsheet(data, spreadsheetId);
@@ -262,7 +233,6 @@ const sendMailWithAccessToken = async (options) => {
         await transporter.sendMail(mailOptions);
     }
     catch (error) {
-        console.error(`Error sending email: ${error.message}`);
         throw new Error('Failed to send email.');
     }
 };
