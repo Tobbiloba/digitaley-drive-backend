@@ -8,16 +8,31 @@ import {
   getSubscribedCourse,
   getUserCourse,
 } from '../controller/course.controller';
-import { isAuthenticated } from '../middleware/auth';
+import { isAuthenticated, authorizeRoles } from '../middleware/auth';
 
 const router = Router();
 
 router.get('/my-course', isAuthenticated, getSubscribedCourse); // works
 router.get('/user-course/:userId', isAuthenticated, getUserCourse);
-router.post('/initialize-course', initializeCourse);
+router.post(
+  '/initialize-course',
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin', 'teacher'),
+  initializeCourse,
+);
 router.get('/', getAllCourses);
 router.get('/:id', getCourseDetails);
-router.put('/:courseId', updateCourse); // works
-router.delete('/:courseId', deleteCourseById);
+router.put(
+  '/:courseId',
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin', 'teacher'),
+  updateCourse,
+);
+router.delete(
+  '/:courseId',
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin', 'teacher'),
+  deleteCourseById,
+);
 
 export default router;

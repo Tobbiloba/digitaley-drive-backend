@@ -33,8 +33,8 @@ userRouter.delete(
 );
 userRouter.post(
   '/register',
-  // isAuthenticated,
-  // authorizeRoles("admin", "super admin"),
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin'),
   registerUserController,
 );
 

@@ -8,30 +8,23 @@ import {
   deleteAllPaymentsController,
   getPaymentByIdController,
 } from '../controller/payment.controller';
-import { isAuthenticated } from '../middleware/auth';
+import { isAuthenticated, authorizeRoles } from '../middleware/auth';
 
 const router = express.Router();
 
-router.post(
-  '/initialize/:courseId',
-  // , isAuthenticated
-  initializePayment,
-);
-// router.post("/update", isAuthenticated, updatePaymentInfo);
+router.post('/initialize/:courseId', initializePayment);
 router.post('/other-payment/:paymentId', isAuthenticated, makeSecondPayment);
-router.post(
-  '/update-payment-status/:paymentId',
-  //   isAuthenticated,
-  amountPaidStatus,
-);
+router.post('/update-payment-status/:paymentId', amountPaidStatus);
 router.get(
   '/',
-  // , isAuthenticated
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin', 'teacher'),
   getAllPayments,
 );
 router.delete(
   '/',
-  // , isAuthenticated
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin', 'teacher'),
   deleteAllPaymentsController,
 );
 

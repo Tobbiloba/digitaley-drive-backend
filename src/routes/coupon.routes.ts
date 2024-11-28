@@ -8,38 +8,28 @@ import {
   createBulkCouponController,
   deleteAllCouponController,
 } from '../controller/coupon.controller';
-import { isAuthenticated } from '../middleware/auth';
+import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 const router = express.Router();
 
 router.get(
   '/',
-  // , isAuthenticated
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin'),
   getAllCouponController,
 );
-router.get(
-  '/:couponId',
-  // , isAuthenticated
-  getCouponByIdController,
-);
-router.get(
-  '/code/:couponCode',
-  //   isAuthenticated,
-  getCouponByCouponCodeController,
-);
+router.get('/:couponId', getCouponByIdController);
+router.get('/code/:couponCode', getCouponByCouponCodeController);
 router.post(
   '/bulk',
-  // , isAuthenticated
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin'),
   createBulkCouponController,
 );
-router.put(
-  '/:couponCode',
-  // ,
-  //  isAuthenticated
-  validateCouponController,
-);
+router.put('/:couponCode', validateCouponController);
 router.delete(
   '/:couponId',
-  // , isAuthenticated
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin'),
   deleteCouponController,
 );
 router.delete('/', isAuthenticated, deleteAllCouponController);

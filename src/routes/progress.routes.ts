@@ -1,5 +1,5 @@
 import express from 'express';
-import { isAuthenticated } from '../middleware/auth';
+import { isAuthenticated, authorizeRoles } from '../middleware/auth';
 import {
   getAllProgressController,
   getProgressByUserIdController,
@@ -14,7 +14,12 @@ import {
 
 const router = express.Router();
 
-router.get('/', isAuthenticated, getAllProgressController);
+router.get(
+  '/',
+  isAuthenticated,
+  authorizeRoles('admin', 'super admin', 'teacher'),
+  getAllProgressController,
+);
 router.post('/:contentId', isAuthenticated, createProgressController);
 router.get('/user/:userId', isAuthenticated, getProgressByUserIdController);
 router.get('/:progressId', isAuthenticated, getProgressByIdController);
