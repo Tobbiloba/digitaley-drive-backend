@@ -21,6 +21,7 @@ import CatchAsyncError from '../middleware/catchAsynchError';
 import ErrorHandler from '../utils/ErrorHandler';
 import { getCourseByIdModel } from '../models/course.model';
 import { IContentDetail } from '../../@types/content';
+import { getProgressByContentId } from '../models/progress.model';
 
 export const getAllContentController = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -121,17 +122,57 @@ export const deleteContentByIdController = CatchAsyncError(
 
 // Create part in content
 export const createPartModelController = CatchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { contentId } = req.params;
-      const partData: IContentDetail = req.body;
-      await createPartModel(contentId, partData);
-      res.status(200).json({ message: 'Successfully created part  ' });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 500));
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { contentId } = req.params;
+        const partData: IContentDetail = req.body;
+
+        // Step 1: Create the new part
+        await createPartModel(contentId, partData);
+
+        // Step 2: Fetch all progress associated with the contentId
+        const progressList = await getProgressByContentId(contentId); // Assume this is a function to fetch progress
+        console.log({progressList})
+        if (!progressList || progressList.length === 0) {
+          return res.status(200).json({
+            message: 'Part created successfully, but no progress records found to update',
+          });
+        }
+
+        // Step 3: Update progress for each user
+        const newSubContentId = partData._id; // Assume the created part has an `_id`
+        console.log({newSubContentId})
+            // Step 3: Update progress for each user
+      await Promise.all(
+        progressList.map(async (progress: any) => {
+          // Add the new part to contentProgress
+          progress.contentProgress.push({
+            subContentId: newSubContentId,
+            viewed: false,
+          });
+
+            // Recalculate progress percentage
+            const totalItems = progress.contentProgress.length;
+            console.log({totalItems})
+            const viewedItems = progress.contentProgress.filter((item: any) => item.viewed).length;
+            progress.progress = (viewedItems / totalItems) * 100;
+            progress.completed = progress.progress === 100;
+            console.log({progress, viewedItems})
+
+            // Save the updated progress
+            await progress.save();
+          })
+        );
+
+        res.status(200).json({
+          message: 'Successfully created part and updated progress for all users',
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+      }
     }
-  },
-);
+  );
+
 
 // Add content to part
 export const addContentToPartModelController = CatchAsyncError(

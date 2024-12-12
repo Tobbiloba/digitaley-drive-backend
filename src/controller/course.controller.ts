@@ -135,6 +135,7 @@ export const getSubscribedCourse = CatchAsyncError(
       if (!user) {
         return next(new ErrorHandler('User not found', 404));
       }
+      const progress = await getProgressByUserId(userId);
       console.log(user.role);
       // If the user is an admin, fetch all courses
       if (user.role === 'admin' || user.role === 'super admin') {
@@ -144,7 +145,7 @@ export const getSubscribedCourse = CatchAsyncError(
           success: true,
           data: {
             courses: courses,
-            progress: [],
+            progress: progress,
           },
         });
       }
@@ -171,13 +172,14 @@ export const getSubscribedCourse = CatchAsyncError(
         }),
       );
 
-      console.log(subscribedCourses);
+    //   console.log(subscribedCourses);
 
       // Filter out null values (non-visible courses)
       const visibleCourses = subscribedCourses.filter(
         (course) => course !== null,
       );
-      const progress = await getProgressByUserId(userId);
+      console.log({userId})
+
       return res.status(200).json({
         success: true,
         data: {

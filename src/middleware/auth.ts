@@ -29,7 +29,7 @@ export const isAuthenticated = CatchAsyncError(
 
     // Validate and process the token
     const accessToken = getToken(token);
-    // console.log("Token", accessToken); // Debugging purposes
+    console.log("Token", accessToken); // Debugging purposes
 
     if (!accessToken) {
       return next(new ErrorHandler('Invalid token. Please login again.', 401));
@@ -97,7 +97,7 @@ export const hasRefreshToken = CatchAsyncError(
       }
 
       req.user = JSON.parse(user);
-
+      console.log({user})
       next();
     }
   },

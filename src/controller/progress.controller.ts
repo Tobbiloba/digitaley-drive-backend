@@ -116,11 +116,11 @@ export const createProgressController = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { contentId } = req.params;
-      console.log(contentId);
+      console.log({contentId});
 
       // Fetch content by contentId
       const content = await getContentById(contentId);
-
+        console.log(content)
       // Check if content exists
       if (!content) {
         return res.status(404).json({
@@ -134,12 +134,12 @@ export const createProgressController = CatchAsyncError(
       const contentIds = contentItems.map((item: any) => item._id);
 
       // If no contentItems, return an error response
-      if (contentIds.length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: 'No content items found in this content',
-        });
-      }
+    //   if (contentIds.length === 0) {
+    //     return res.status(400).json({
+    //       success: false,
+    //       message: 'No content items found in this content',
+    //     });
+    //   }
 
       // Create data structure for progress
       const data = {

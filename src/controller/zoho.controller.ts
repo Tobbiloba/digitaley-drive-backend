@@ -142,14 +142,18 @@ export const hireTalentController = CatchAsyncError(
     } = req.body;
 
     const data = {
+        'Contact Person': name,
+      'Contact Email': email,
       'Job Title': jobTitle,
       'Job Description': jobDescription,
       'Job Type': jobType,
       'Hiring Multiple Candidates': hiringMultiple,
       'Additional Note': additionalNote,
-      'Contact Person': name,
-      'Contact Email': email,
+
     };
+
+
+    console.log({data})
 
     try {
       const spreadsheetId = process.env.ZOHO_HIRE_TALENT_SPREADSHEET_ID;
@@ -157,12 +161,15 @@ export const hireTalentController = CatchAsyncError(
         data,
         spreadsheetId as string,
       );
+
+      console.log(response)
       return res.status(200).json({
         success: true,
         message: 'Successfully sent data',
         status: response.status,
       });
     } catch (error: any) {
+        console.log(error)
       return next(
         new ErrorHandler(
           'Failed to send data to Zoho Spreadsheet. Please try again later.',
@@ -200,6 +207,8 @@ export const privateClassController = CatchAsyncError(
       'How did you hear about us?': hearAboutUs,
       companyRole: currentRole,
     };
+
+    console.log({data})
     try {
       const spreadsheetId = process.env.ZOHO_PRIVATE_CLASS_SPREADSHEET_ID;
       const response = await sendDataToZohoSpreadsheet(

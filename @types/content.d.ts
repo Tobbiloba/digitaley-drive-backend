@@ -12,6 +12,7 @@ export interface IContentItem extends Document {
 
 // Interface for Content Details
 export interface IContentDetail extends Document {
+    _id: string;
   heading: string;
   summary: string;
   media: {

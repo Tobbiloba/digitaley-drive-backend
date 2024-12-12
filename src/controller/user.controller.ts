@@ -41,13 +41,14 @@ export const loginUserController = CatchAsyncError(
 
       const user = await userModel
         .findOne({ email })
-        .select('+authentication.password +authentication.salt');
+        .select('+authentication.password +authentication.salt +firstName');
       if (!user) {
         return next(new ErrorHandler('Invalid email or password', 400));
       }
 
       const { salt, password: hashedPassword } = user?.authentication;
       const expectedHash = authentication(salt, password);
+      console.log(expectedHash, hashedPassword);
       if (hashedPassword !== expectedHash) {
         return res
           .status(403)
@@ -198,7 +199,7 @@ export const updatePasswordController = CatchAsyncError(
 
       const { salt, password: hashedPassword } = user.authentication;
       const oldPasswordHash = authentication(salt, oldPassword);
-
+      console.log(oldPasswordHash, hashedPassword);
       if (hashedPassword !== oldPasswordHash) {
         return next(new ErrorHandler('Invalid old password', 400));
       }
