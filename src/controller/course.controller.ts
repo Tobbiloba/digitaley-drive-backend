@@ -140,13 +140,11 @@ export const getSubscribedCourse = CatchAsyncError(
       // If the user is an admin, fetch all courses
       if (user.role === 'admin' || user.role === 'super admin') {
         const courses = await getAllCoursesModel();
-        console.log(courses);
+        console.log({courses, progress});
         return res.status(200).json({
           success: true,
-          data: {
-            courses: courses,
+          courses: courses,
             progress: progress,
-          },
         });
       }
 
@@ -182,10 +180,10 @@ export const getSubscribedCourse = CatchAsyncError(
 
       return res.status(200).json({
         success: true,
-        data: {
+        // data: {
           courses: visibleCourses,
           progress: progress,
-        },
+        // },
       });
     } catch (error: any) {
       console.error('Error fetching subscribed courses:', error);

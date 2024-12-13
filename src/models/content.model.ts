@@ -16,7 +16,7 @@ const ContentDetailSchema: Schema = new Schema({
   heading: { type: String, required: true },
   summary: { type: String, required: true },
   media: {
-    mediaUrl: { type: String },
+    mediaUrl: { type: String, required: true },
     mediaType: { type: String, required: true },
   },
   relatedLinks: [HyperlinkSchema],

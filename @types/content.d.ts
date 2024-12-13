@@ -12,12 +12,12 @@ export interface IContentItem extends Document {
 
 // Interface for Content Details
 export interface IContentDetail extends Document {
-    _id: string;
+    _id?: string;
   heading: string;
   summary: string;
   media: {
     mediaUrl: string;
-    mediaType: 'video' | 'pdf';
+    mediaType: 'Video' | 'PDF File';
   };
   relatedLinks: ILink[];
 }

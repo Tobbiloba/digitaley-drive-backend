@@ -49,7 +49,7 @@ export const getContentByIdController = CatchAsyncError(
       }
       res.status(200).json({
         success: true,
-        data: content,
+        content,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -126,9 +126,10 @@ export const createPartModelController = CatchAsyncError(
       try {
         const { contentId } = req.params;
         const partData: IContentDetail = req.body;
-
+        console.log("callled create part", contentId, partData)
         // Step 1: Create the new part
-        await createPartModel(contentId, partData);
+        const part = await createPartModel(contentId, partData);
+        console.log({part} )
 
         // Step 2: Fetch all progress associated with the contentId
         const progressList = await getProgressByContentId(contentId); // Assume this is a function to fetch progress
@@ -201,7 +202,11 @@ export const getContentPartController = CatchAsyncError(
       if (!part) {
         return next(new ErrorHandler('Part not found', 404));
       }
-      res.status(200).json(part);
+
+      console.log("called gt content part")
+      const partData = part.contentItems[0].contentDetails;
+      console.log({partData})
+      res.status(200).json(partData);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
