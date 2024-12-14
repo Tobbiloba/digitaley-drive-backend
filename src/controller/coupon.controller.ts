@@ -19,7 +19,7 @@ export const getAllCouponController = CatchAsyncError(
       const coupons = await getAllCouponModel();
       res.status(200).json({
         success: true,
-        data: coupons,
+        coupons,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -37,7 +37,7 @@ export const getCouponByIdController = CatchAsyncError(
       }
       res.status(200).json({
         success: true,
-        data: coupon,
+        coupon,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -55,7 +55,7 @@ export const getCouponByCouponCodeController = CatchAsyncError(
       }
       res.status(200).json({
         success: true,
-        data: coupon,
+        coupon,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));

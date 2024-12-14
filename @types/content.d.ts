@@ -17,7 +17,7 @@ export interface IContentDetail extends Document {
   summary: string;
   media: {
     mediaUrl: string;
-    mediaType: 'Video' | 'PDF File';
+    mediaType: 'video' | 'pdf';
   };
   relatedLinks: ILink[];
 }

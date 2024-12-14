@@ -24,7 +24,7 @@ export const getAllPayments = CatchAsyncError(
       const payments = await getAllPaymentsModel();
       return res.status(200).json({
         success: true,
-        data: payments,
+        payments,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
@@ -427,7 +427,7 @@ export const getPaymentByIdController = CatchAsyncError(
       const payment = await getPaymentByIdModel(paymentId);
       return res.status(200).json({
         success: true,
-        data: payment,
+        payment,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));

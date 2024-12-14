@@ -8,6 +8,7 @@ import {
   getAllUserController,
   deleteUserController,
   registerUserController,
+  getUserByIdController,
 } from '../controller/user.controller';
 const userRouter = express.Router();
 
@@ -25,6 +26,9 @@ userRouter.get(
   authorizeRoles('admin', 'super admin'),
   getAllUserController,
 );
+userRouter
+  .route('/my-info')
+  .get(isAuthenticated, getUserByIdController)
 userRouter.delete(
   '/:id',
   isAuthenticated,
@@ -33,8 +37,8 @@ userRouter.delete(
 );
 userRouter.post(
   '/register',
-//   isAuthenticated,
-//   authorizeRoles('admin', 'super admin'),
+  //   isAuthenticated,
+  //   authorizeRoles('admin', 'super admin'),
   registerUserController,
 );
 

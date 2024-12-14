@@ -183,6 +183,7 @@ export const updatePasswordController = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { oldPassword, newPassword } = req.body as IUpdatePassword;
+      console.log({oldPassword, newPassword})
       if (!oldPassword || !newPassword) {
         return next(
           new ErrorHandler('Please enter both old and new passwords', 400),
@@ -232,10 +233,32 @@ export const getAllUserController = CatchAsyncError(
   },
 );
 
+export const getUserByIdController = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const userId = req.user?._id;
+        const user = await userModel.findById(userId);
+
+        if (!user) {
+          return next(new ErrorHandler('User not found', 404));
+        }
+
+
+        res.status(200).json({
+          success: true,
+          user
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+      }
+    },
+  );
+
 export const deleteUserController = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
+      console.log({id})
       const user = await userModel.findById(id);
 
       if (!user) {
@@ -287,7 +310,7 @@ export const registerUserController = CatchAsyncError(
       const { email, courseName, withInternship, amountPaid, role } = req.body;
       let user;
       user = await userModel.findOne({ email });
-
+        console.log({email, courseName, withInternship, amountPaid, role})
       if ((role === 'teacher' || role === 'user') && !courseName) {
         return next(new ErrorHandler('Please provide a course name', 400));
       }
@@ -360,7 +383,7 @@ export const registerUserController = CatchAsyncError(
           password: password,
           role: role,
         };
-
+        console.log({data})
         await sendMailWithAccessToken({
           email: email,
           subject: 'Admin Account Creation',
@@ -483,6 +506,7 @@ export const registerUserController = CatchAsyncError(
         payment,
       });
     } catch (error: any) {
+        console.log({error})
       return next(new ErrorHandler(error.message, 400)); // Handle errors
     }
   },

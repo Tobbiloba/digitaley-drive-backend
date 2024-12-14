@@ -23,7 +23,7 @@ const router = express.Router();
 
 router.get('/', getAllContentController);
 router.get('/:contentId', getContentByIdController);
-router.get('/course/:courseId/content', getContentByCourseIdController);
+router.get('/course/:courseId/', getContentByCourseIdController);
 router.post('/:courseId', createContentController);
 router.delete('/:contentId', deleteContentByIdController);
 router.post('/:contentId/part', createPartModelController);

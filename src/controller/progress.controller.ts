@@ -23,7 +23,7 @@ export const getAllProgressController = CatchAsyncError(
       const progress = await getAllProgress();
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -41,7 +41,7 @@ export const getProgressByIdController = CatchAsyncError(
       }
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -56,7 +56,7 @@ export const getProgressByContentIdController = CatchAsyncError(
       const progress = await getProgressBycontentId(contentId);
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -71,7 +71,7 @@ export const getProgressByUserIdController = CatchAsyncError(
       const progress = await getProgressByUserId(userId);
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -86,7 +86,7 @@ export const createProgressByUserIdAndContentIdController = CatchAsyncError(
       const progress = await createProgress({ userId, contentId });
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -104,7 +104,7 @@ export const getProgressByContentAndUserIdController = CatchAsyncError(
       const progress = await getProgressByContentAndUserId(contentId, userId);
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -161,7 +161,7 @@ export const createProgressController = CatchAsyncError(
       // Respond with created progress data
       return res.status(201).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -192,7 +192,7 @@ export const updateProgressController = CatchAsyncError(
       const progress = await updateProgress(progressId, req.body);
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -207,7 +207,7 @@ export const deleteProgressController = CatchAsyncError(
       const progress = await deleteProgress(progressId);
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -284,7 +284,7 @@ export const updateContentProgressController = CatchAsyncError(
       // Send the response with updated progress
       res.status(200).json({
         success: true,
-        data: entireProgress, // Or just send the progress if needed
+        entireProgress, // Or just send the progress if needed
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -300,7 +300,7 @@ export const resetProgressController = CatchAsyncError(
       const progress = await resetProgress(contentId, userId);
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -313,7 +313,7 @@ export const deleteAllProgressController = CatchAsyncError(
       const progress = await deleteAllProgress();
       res.status(200).json({
         success: true,
-        data: progress,
+        progress,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
